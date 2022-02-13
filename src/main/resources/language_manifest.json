@@ -1,0 +1,21 @@
+{
+		"id": "ideas-dockercompose-language",
+		"extension": "yaml",
+		"apiVersion": 1.0,
+		"name": "Docker-Compose Language",
+		"formats": [
+			 {
+				"format": "DockerCompose_format",
+				"editorModeId": "ace/mode/yaml",
+				"_editorModeURI": "mode-yaml.js",                         
+				"editorThemeId": "ace/theme/eclipse",
+				"_editorThemeURI": "theme-yaml.js",
+				 "checkLanguage": "true" 
+			 }
+		],
+				 
+				"operations": [],
+				"templateProjects":null,
+   				"templateFiles":null,
+				"inspectorLoader": "function(loader, format) {}"
+}
