@@ -8,7 +8,7 @@
 				"format": "DockerCompose_format",
 				"editorModeId": "ace/mode/yaml",
 				"_editorModeURI": "mode-yaml.js",                         
-				"editorThemeId": "ace/theme/eclipse",
+				"editorThemeId": "ace/theme/yaml",
 				"_editorThemeURI": "theme-yaml.js",
 				 "checkLanguage": "true" 
 			 }
