@@ -23,7 +23,7 @@ public class DockerComposeOperations {
         return "docker exec " + username + " " + command;
     }
 
-    public void up(String content, String fileName, String username, AppResponse appResponse) {
+    public void up(String content, String fileName, String username, String flags, AppResponse appResponse) {
         try {
             //executeCommand(inContainer(username, "mkdir /dockercomposefiles"), "/");
             executeCommand(inContainer(username, "touch /dockercomposefiles/" + fileName), "/");
@@ -38,7 +38,7 @@ public class DockerComposeOperations {
             executeCommand("docker cp /dockercomposefiles/" + username + " " + username + ":/dockercomposefiles/" + fileName, "/");
             tmpDockerComposeFile.delete();
 
-            String message = executeCommand(inContainer(username, "docker-compose -f /dockercomposefiles/" + fileName + " --no-ansi up -d"),
+            String message = executeCommand(inContainer(username, "docker-compose -f /dockercomposefiles/" + fileName + " --no-ansi up -d " + flags),
                     "/");
 
             appResponse.setHtmlMessage(message);
@@ -48,9 +48,9 @@ public class DockerComposeOperations {
         }
     }
 
-    public void down(String content, String fileName, String username, AppResponse appResponse) {
+    public void down(String fileName, String username, String flags, AppResponse appResponse) {
         try {
-            String message = executeCommand(inContainer(username, "docker-compose -f /dockercomposefiles/" + fileName + " --no-ansi down"),
+            String message = executeCommand(inContainer(username, "docker-compose -f /dockercomposefiles/" + fileName + " --no-ansi down " + flags),
                     "/");
 
             appResponse.setHtmlMessage(message);
@@ -59,6 +59,28 @@ public class DockerComposeOperations {
             generateAppResponseError(appResponse, e);
         }
     }
+
+    public void logs_from_container(String username, String containerId, AppResponse appResponse) {
+        try {
+            String message = executeCommand(inContainer(username, "docker logs " + containerId), "/");
+
+            appResponse.setHtmlMessage(message);
+            appResponse.setStatus(Status.OK);
+        } catch (IOException e) {
+            generateAppResponseError(appResponse, e);
+        }
+    }
+
+    public void showContainers(String username, String flags, AppResponse appResponse) {
+        try {
+            String message = executeCommand(inContainer(username, "docker ps " + flags), "/");
+            appResponse.setHtmlMessage(message);
+            appResponse.setStatus(Status.OK);
+        } catch (IOException e) {
+            generateAppResponseError(appResponse, e);
+        }
+    }
+
 
 
     public String executeCommand(String command, String inputPath) throws IOException {

@@ -91,13 +91,21 @@ public class DockerComposeLanguageController extends BaseLanguageController {
 		}
 		switch(id){
 			case "up":
-				operations.up(content, request.getParameter("fileName"), username, appResponse);
+				operations.up(content, request.getParameter("fileName"), username, request.getParameter("flags"), appResponse);
 				break;
 
 			case "down":
-				operations.down(username, request.getParameter("fileName"), username, appResponse);
+				operations.down(request.getParameter("fileName"), username, request.getParameter("flags"), appResponse);
 				break;
-			
+
+			case "logs":
+				operations.logs_from_container(username, request.getParameter("containerId"), appResponse);
+				break;
+
+			case "show_containers":
+				operations.showContainers(username, request.getParameter("flags"), appResponse);
+				break;
+
 			default:
 				String htmlMessage = operations.generateHTMLMessage("", "'" + id + "' no es un id válido.", 0);
 				appResponse.setHtmlMessage(htmlMessage);
