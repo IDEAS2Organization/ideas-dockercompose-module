@@ -1,0 +1,6 @@
+version: "3.5"
+services:
+  dind:
+    image: "docker:dind"
+  redis:
+    image: "redis:alpine"

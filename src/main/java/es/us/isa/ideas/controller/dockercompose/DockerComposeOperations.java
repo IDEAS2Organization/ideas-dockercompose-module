@@ -112,6 +112,36 @@ public class DockerComposeOperations {
         return generateHTMLMessage(outputString, errorString, System.currentTimeMillis() - start);
     }
 
+
+
+    public String[] executeCommandForTesting(String command, String inputPath) throws IOException {
+        System.out.println(System.currentTimeMillis() + " - Executing command: '" + command + "' at path: '"
+                + inputPath + "'");
+
+        String[] commands = command.split(" ");
+        ProcessBuilder pb = new ProcessBuilder(commands);
+        pb.directory(new File(inputPath));
+
+        Path output = Files.createTempFile("", "-outuput.log");
+        Path errors = Files.createTempFile("", "-error.log");
+        pb.redirectError(Redirect.appendTo(errors.toFile()));
+        pb.redirectOutput(Redirect.appendTo(output.toFile()));
+
+        Process p = pb.start();
+        while (p.isAlive()) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ex) {
+                Logger.getLogger("Docker").log(Level.SEVERE, null, ex);
+            }
+        }
+        System.out.println(System.currentTimeMillis() + " - Command execution finished with code: " + p.exitValue());
+        String outputString = org.assertj.core.util.Files.contentOf(output.toFile(), Charset.defaultCharset());
+        String errorString = org.assertj.core.util.Files.contentOf(errors.toFile(), Charset.defaultCharset());
+        String[] array = {outputString, errorString};
+        return array;
+    }
+
     public String generateHTMLMessage(String output, String errors, long duration) {
         StringBuilder builder = new StringBuilder();
         builder.append("<b>Execution duration:</b>" + duration + " ms<br>\n");
