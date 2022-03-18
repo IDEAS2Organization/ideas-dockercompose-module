@@ -20,6 +20,8 @@ import org.apache.tomcat.util.http.fileupload.InvalidFileNameException;
 
 public class DockerComposeOperations {
 
+    private Boolean single_mode = Boolean.parseBoolean(System.getenv("SINGLE_MODE"));
+
     public String avoidCodeInjection(String command) {
         if (command.contains("&")) {
             throw new InvalidFileNameException(command,
@@ -30,27 +32,35 @@ public class DockerComposeOperations {
     }
 
     public String inContainer(String username, String command) {
-        return "docker exec " + username + " " + avoidCodeInjection(command);
+        if (single_mode) {
+            return avoidCodeInjection(command);
+        } else {
+            return "docker exec " + username + " " + avoidCodeInjection(command);
+        }
     }
 
     public void up(String content, String fileName, String username, String flags, AppResponse appResponse) {
         try {
-            //executeCommand(inContainer(username, "mkdir /dockercomposefiles"), "/");
-            executeCommand(inContainer(username, "touch /dockercomposefiles/" + fileName), "/");
+            if (single_mode) {
+                File dockerComposeFile = new File("/dockercomposefiles/" + fileName);
+                FileWriter fw = new FileWriter(dockerComposeFile);
+                fw.write(content);
+                fw.close();
+            } else {
+                executeCommand(inContainer(username, "touch /dockercomposefiles/" + fileName), "/");
+                Path path = Paths.get("/dockercomposefiles");
+                Files.createDirectories(path);
+                File tmpDockerComposeFile = new File("/dockercomposefiles/" + username);
+                FileWriter fw = new FileWriter(tmpDockerComposeFile);
+                fw.write(content);
+                fw.close();
 
-            Path path = Paths.get("/dockercomposefiles");
-            Files.createDirectories(path);
-            File tmpDockerComposeFile = new File("/dockercomposefiles/" + username);
-            FileWriter fw = new FileWriter(tmpDockerComposeFile);
-            fw.write(content);
-            fw.close();
-
-            executeCommand("docker cp /dockercomposefiles/" + username + " " + username + ":/dockercomposefiles/" + fileName, "/");
-            tmpDockerComposeFile.delete();
-
+                executeCommand("docker cp /dockercomposefiles/" + username + " " + username + ":/dockercomposefiles/" + fileName, "/");
+                tmpDockerComposeFile.delete();
+            }
+    
             String message = executeCommand(inContainer(username, "docker-compose -f /dockercomposefiles/" + fileName + " --no-ansi up -d " + flags),
                     "/");
-
             appResponse.setHtmlMessage(message);
             appResponse.setStatus(Status.OK);
         } catch (IOException e) {

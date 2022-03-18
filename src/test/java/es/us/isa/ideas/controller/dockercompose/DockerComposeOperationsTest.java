@@ -14,6 +14,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
+import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
 import org.junit.jupiter.api.Order;
 
 import es.us.isa.ideas.module.common.AppResponse;
@@ -43,6 +44,7 @@ public class DockerComposeOperationsTest {
     String[] usernames = {"test1", "test2"};
     String[] documentNames = {"SimpleDockerCompose.yaml", "IdeasDockerCompose.yaml"};
     String[] documentContents = {"", ""};
+    private Boolean single_mode = Boolean.parseBoolean(System.getenv("SINGLE_MODE"));
 
 
     @BeforeAll
@@ -59,12 +61,19 @@ public class DockerComposeOperationsTest {
             } 
         }
         
-        for (String u: usernames) {
-            operations.executeCommand("docker run -d --privileged --name " + u + " aymdev/dind-compose dockerd", "/");
-            operations.executeCommand(operations.inContainer(u, "mkdir /dockercomposefiles"), "/");
-            operations.executeCommand("docker start " + u, "/");
-            System.out.println("CONTAINER RUNNING FOR: " + u);
+        if (!single_mode) {
+            for (String u: usernames) {
+                operations.executeCommand("docker run -d --privileged --name " + u + " aymdev/dind-compose dockerd", "/");
+                operations.executeCommand(operations.inContainer(u, "mkdir /dockercomposefiles"), "/");
+                operations.executeCommand("docker start " + u, "/");
+                System.out.println("CONTAINER RUNNING FOR: " + u);
+            }
+        } else {
+            operations.executeCommand("docker kill $(docker ps -aq)", "/");
+            operations.executeCommand("docker rm $(docker ps -aq)", "/");
+            operations.executeCommand(operations.inContainer("", "mkdir /dockercomposefiles"), "/");
         }
+        
  
         System.out.println("SETUP OK");
     }
@@ -75,10 +84,16 @@ public class DockerComposeOperationsTest {
         System.out.println("==================================");
         System.out.println("STOPPING TEST CONTAINER");
 
-        for (String u:usernames) {
-            operations.executeCommand("docker kill " + u, "/");
-            operations.executeCommand("docker rm " + u, "/");
-        }        
+        if (!single_mode) {
+            for (String u:usernames) {
+                operations.executeCommand("docker kill " + u, "/");
+                operations.executeCommand("docker rm " + u, "/");
+            }       
+        } else {
+            operations.executeCommand("docker kill $(docker ps -aq)", "/");
+            operations.executeCommand("docker rm $(docker ps -aq)", "/");
+        }
+         
         System.out.println("==================================");
         System.out.println("TESTS FINISHED");
     }
@@ -125,6 +140,7 @@ public class DockerComposeOperationsTest {
 
     @Test
     @Order(3)
+    @DisabledIfEnvironmentVariable(named = "SINGLE_MODE", matches= "true")
     public void testMultipleUsers() throws IOException {
         System.out.println("==================================");
         System.out.println("TEST MULTIPLE USERS");
