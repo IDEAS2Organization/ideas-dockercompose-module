@@ -15,12 +15,22 @@ import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.tomcat.util.http.fileupload.InvalidFileNameException;
+
 
 public class DockerComposeOperations {
 
+    public String avoidCodeInjection(String command) {
+        if (command.contains("&")) {
+            throw new InvalidFileNameException(command,
+                    "Se ha detectado una posible injección de código en el nombre. Usa otro comando");
+        }
+        // Reemplaza los ' por \' y los " por \" para evitar inyecciones de código
+        return command.replace("'", "\\'").replace("\"", "\\\""); 
+    }
 
     public String inContainer(String username, String command) {
-        return "docker exec " + username + " " + command;
+        return "docker exec " + username + " " + avoidCodeInjection(command);
     }
 
     public void up(String content, String fileName, String username, String flags, AppResponse appResponse) {
@@ -45,6 +55,10 @@ public class DockerComposeOperations {
             appResponse.setStatus(Status.OK);
         } catch (IOException e) {
             generateAppResponseError(appResponse, e);
+        } catch (InvalidFileNameException e) {
+            generateAppResponseError(appResponse, e);
+        } catch (Exception e){
+            generateAppResponseError(appResponse, e);
         }
     }
 
@@ -57,6 +71,10 @@ public class DockerComposeOperations {
             appResponse.setStatus(Status.OK);
         } catch (IOException e) {
             generateAppResponseError(appResponse, e);
+        } catch (InvalidFileNameException e) {
+            generateAppResponseError(appResponse, e);
+        } catch (Exception e){
+            generateAppResponseError(appResponse, e);
         }
     }
 
@@ -68,6 +86,10 @@ public class DockerComposeOperations {
             appResponse.setStatus(Status.OK);
         } catch (IOException e) {
             generateAppResponseError(appResponse, e);
+        } catch (InvalidFileNameException e) {
+            generateAppResponseError(appResponse, e);
+        } catch (Exception e){
+            generateAppResponseError(appResponse, e);
         }
     }
 
@@ -77,6 +99,10 @@ public class DockerComposeOperations {
             appResponse.setHtmlMessage(message);
             appResponse.setStatus(Status.OK);
         } catch (IOException e) {
+            generateAppResponseError(appResponse, e);
+        } catch (InvalidFileNameException e) {
+            generateAppResponseError(appResponse, e);
+        } catch (Exception e){
             generateAppResponseError(appResponse, e);
         }
     }
@@ -157,7 +183,7 @@ public class DockerComposeOperations {
 
     }
 
-    public void generateAppResponseError(AppResponse appResponse, IOException e) {
+    public void generateAppResponseError(AppResponse appResponse, Exception e) {
         appResponse
                 .setHtmlMessage("<h1>An error has ocurred. </h1><br><b><pre>" + e.toString() + "'</pre></b>");
         appResponse.setStatus(Status.OK_PROBLEMS); // Si se pone Status.ERRORS no muestra el mensaje HTML
