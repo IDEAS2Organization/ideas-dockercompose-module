@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 @RequestMapping("/ideas-dockercompose-language/language")
 public class DockerComposeLanguageController extends BaseLanguageController {
 
-	private Boolean single_mode = Boolean.parseBoolean(System.getenv("SINGLE_MODE"));
+	private Boolean one_user_mode = Boolean.parseBoolean(System.getenv("ONE_USER_MODE"));
 
 	DockerComposeOperations operations = new DockerComposeOperations();
 
@@ -84,9 +84,8 @@ public class DockerComposeLanguageController extends BaseLanguageController {
 			// Si el contenedor está parado, el primer comando falla y el segundo inicia el contenedor
 			// Si el contenedor no existe, el primer comando lo crea y el segundo no hace nada
 			
-			System.out.println(single_mode);
-			if (!single_mode) {
-				operations.executeCommand("docker run -d --privileged --name " + username + " aymdev/dind-compose dockerd", "/");
+			if (!one_user_mode) {
+				operations.executeCommand("docker run -d --privileged --name " + username + " docker4ideas/dind-compose dockerd", "/");
 				//operations.executeCommand(operations.inContainer(username, "mkdir /dockercomposefiles"), "/");
 				operations.executeCommand("docker start " + username, "/");
 			}

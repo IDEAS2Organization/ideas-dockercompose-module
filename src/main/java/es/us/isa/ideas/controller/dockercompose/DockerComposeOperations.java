@@ -20,7 +20,7 @@ import org.apache.tomcat.util.http.fileupload.InvalidFileNameException;
 
 public class DockerComposeOperations {
 
-    private Boolean single_mode = Boolean.parseBoolean(System.getenv("SINGLE_MODE"));
+    private Boolean one_user_mode = Boolean.parseBoolean(System.getenv("ONE_USER_MODE"));
 
     public String avoidCodeInjection(String command) {
         if (command.contains("&")) {
@@ -32,7 +32,7 @@ public class DockerComposeOperations {
     }
 
     public String inContainer(String username, String command) {
-        if (single_mode) {
+        if (one_user_mode) {
             return avoidCodeInjection(command);
         } else {
             return "docker exec " + username + " " + avoidCodeInjection(command);
@@ -41,7 +41,7 @@ public class DockerComposeOperations {
 
     public void up(String content, String fileName, String username, String flags, AppResponse appResponse) {
         try {
-            if (single_mode) {
+            if (one_user_mode) {
                 File dockerComposeFile = new File("/dockercomposefiles/" + fileName);
                 FileWriter fw = new FileWriter(dockerComposeFile);
                 fw.write(content);

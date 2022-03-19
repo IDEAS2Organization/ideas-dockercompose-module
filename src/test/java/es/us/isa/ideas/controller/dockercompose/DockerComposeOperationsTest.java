@@ -44,7 +44,7 @@ public class DockerComposeOperationsTest {
     String[] usernames = {"test1", "test2"};
     String[] documentNames = {"SimpleDockerCompose.yaml", "IdeasDockerCompose.yaml"};
     String[] documentContents = {"", ""};
-    private Boolean single_mode = Boolean.parseBoolean(System.getenv("SINGLE_MODE"));
+    private Boolean one_user_mode = Boolean.parseBoolean(System.getenv("ONE_USER_MODE"));
 
 
     @BeforeAll
@@ -61,9 +61,9 @@ public class DockerComposeOperationsTest {
             } 
         }
         
-        if (!single_mode) {
+        if (!one_user_mode) {
             for (String u: usernames) {
-                operations.executeCommand("docker run -d --privileged --name " + u + " aymdev/dind-compose dockerd", "/");
+                operations.executeCommand("docker run -d --privileged --name " + u + " docker4ideas/dind-compose dockerd", "/");
                 operations.executeCommand(operations.inContainer(u, "mkdir /dockercomposefiles"), "/");
                 operations.executeCommand("docker start " + u, "/");
                 System.out.println("CONTAINER RUNNING FOR: " + u);
@@ -84,7 +84,7 @@ public class DockerComposeOperationsTest {
         System.out.println("==================================");
         System.out.println("STOPPING TEST CONTAINER");
 
-        if (!single_mode) {
+        if (!one_user_mode) {
             for (String u:usernames) {
                 operations.executeCommand("docker kill " + u, "/");
                 operations.executeCommand("docker rm " + u, "/");
@@ -140,7 +140,7 @@ public class DockerComposeOperationsTest {
 
     @Test
     @Order(3)
-    @DisabledIfEnvironmentVariable(named = "SINGLE_MODE", matches= "true")
+    @DisabledIfEnvironmentVariable(named = "ONE_USER_MODE", matches= "true")
     public void testMultipleUsers() throws IOException {
         System.out.println("==================================");
         System.out.println("TEST MULTIPLE USERS");
