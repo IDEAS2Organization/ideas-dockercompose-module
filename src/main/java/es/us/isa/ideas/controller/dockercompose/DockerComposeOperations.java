@@ -59,7 +59,7 @@ public class DockerComposeOperations {
                 tmpDockerComposeFile.delete();
             }
     
-            String message = executeCommand(inContainer(username, "docker-compose -f /dockercomposefiles/" + fileName + " --no-ansi up -d " + flags),
+            String message = executeCommand(inContainer(username, "docker-compose -f /dockercomposefiles/" + fileName + " --ansi never up -d " + flags),
                     "/");
             appResponse.setHtmlMessage(message);
             appResponse.setStatus(Status.OK);
@@ -74,7 +74,7 @@ public class DockerComposeOperations {
 
     public void down(String fileName, String username, String flags, AppResponse appResponse) {
         try {
-            String message = executeCommand(inContainer(username, "docker-compose -f /dockercomposefiles/" + fileName + " --no-ansi down " + flags),
+            String message = executeCommand(inContainer(username, "docker-compose -f /dockercomposefiles/" + fileName + " --ansi never down " + flags),
                     "/");
 
             appResponse.setHtmlMessage(message);
