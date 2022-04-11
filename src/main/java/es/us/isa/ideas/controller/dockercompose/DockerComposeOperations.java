@@ -178,19 +178,15 @@ public class DockerComposeOperations {
         return array;
     }
 
+    // Modificado para concatenar "Errors founds" en "Operation output"
     public String generateHTMLMessage(String output, String errors, long duration) {
         StringBuilder builder = new StringBuilder();
         builder.append("<b>Execution duration:</b>" + duration + " ms<br>\n");
 
         builder.append("<h3>Operation output:</h3>\n");
-        builder.append("<p><pre>" + output + "</pre></p>\n");
+        builder.append("<p><pre>" + output + "\n" + errors + "</pre></p>\n");
 
-        if (!errors.equals("")) {
-            builder.append("<h3>Errors found:</h3>\n");
-            builder.append("<p><pre>" + errors + "</pre></p>\n");
-        }
         return builder.toString();
-
     }
 
     public void generateAppResponseError(AppResponse appResponse, Exception e) {
