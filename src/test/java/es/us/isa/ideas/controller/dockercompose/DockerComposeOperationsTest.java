@@ -24,15 +24,6 @@ import es.us.isa.ideas.module.common.AppResponse.Status;
 @TestMethodOrder(OrderAnnotation.class)
 public class DockerComposeOperationsTest {
 
-    
-    /*
-    - Pruebas unitarias de up y down.
-    - Pruebas del controlador (¿automáticas o plan de pruebas?)
-    - Pruebas de múltiples usuarios (un usuario no ve los contenedores del resto)
-    - ¿Pruebas de flags?
-    - ¿Pruebas de coloreado de sintaxis?
-    */
-
     /*
     SETUP:
     1º: Carga un documento de pruebas
@@ -42,8 +33,8 @@ public class DockerComposeOperationsTest {
     DockerComposeOperations operations = new DockerComposeOperations();
 
     String[] usernames = {"test1", "test2"};
-    String[] documentNames = {"SimpleDockerCompose.yaml", "IdeasDockerCompose.yaml"};
-    String[] documentContents = {"", ""};
+    String[] documentNames = {"SimpleDockerCompose.yaml", "IdeasDockerCompose.yaml", "OneServiceCompose.yaml"};
+    String[] documentContents = {"", "", ""};
     private Boolean one_user_mode = Boolean.parseBoolean(System.getenv("ONE_USER_MODE"));
 
 
@@ -101,7 +92,7 @@ public class DockerComposeOperationsTest {
 
     @Test
     @Order(1)
-    public void testComposeUp() throws IOException {
+    public void testComposeUpAndDown() throws IOException {
         System.out.println("==================================");
         System.out.println("TEST COMPOSE UP");
 
@@ -116,30 +107,61 @@ public class DockerComposeOperationsTest {
         // Comprobar que hay 2 contenedores en ejecución
         String[] output = operations.executeCommandForTesting(operations.inContainer(usernames[0], "docker ps -aq"), "/");
         assertEquals(2, output[0].split("\n").length);
-    }
 
-    @Test
-    @Order(2)
-    public void testComposeDown() throws IOException {
         System.out.println("==================================");
         System.out.println("TEST COMPOSE DOWN");
 
         // Obtener de un testFile: nombre, flags.
-        AppResponse appResponse = new AppResponse();
-        String flags = "";
+        appResponse = new AppResponse();
+        flags = "";
 
         // Ejecutar 
         operations.down("SimpleDockerCompose.yaml", usernames[0], flags, appResponse);
         assertEquals(appResponse.getStatus(), Status.OK);
 
         // Comprobar que hay 0 contenedores en ejecución
-        String[] output = operations.executeCommandForTesting(operations.inContainer(usernames[0], "docker ps -aq"), "/");
+        output = operations.executeCommandForTesting(operations.inContainer(usernames[0], "docker ps -aq"), "/");
         assertEquals("", output[0]);
+        
     }
 
 
     @Test
     @Order(3)
+    public void testLogs() throws IOException {
+        System.out.println("==================================");
+        System.out.println("TEST LOGS FROM CONTAINER");
+
+        // Compose Up de solo un contenedor y obtenemos containerId
+        AppResponse appResponse = new AppResponse();
+        String flags = "";
+        operations.up(documentContents[2], "OneServiceCompose.yaml", usernames[0], flags, appResponse);
+        assertEquals(appResponse.getStatus(), Status.OK);
+        
+        flags = "--quiet";
+        operations.showContainers(usernames[0], flags, appResponse);
+        assertEquals(appResponse.getStatus(), Status.OK);
+        String containerId = appResponse.getHtmlMessage().split("<pre>")[1].split("\n")[0]; 
+
+        // Ejecutar
+        operations.logs_from_container(usernames[0], containerId, appResponse);
+
+        // Comprobar que la salida es la esperada
+        assertEquals(appResponse.getStatus(), Status.OK);
+        String logs = appResponse.getHtmlMessage();
+        File logs_output = new File("src/main/resources/testfiles/logs.txt");
+        assertEquals(logs.replaceAll("</b>.*? ms", "</b>1 ms").replaceAll("172\\.[0-9]{2}\\.0\\..*?\\.", "172.18.0.*.")
+                .replaceAll("\n\\[.*?\\]", "\n[fecha]").replaceAll("tid .*?]", "tid \\*]").replaceAll("Apache/2\\.4\\.[0-9]{2}", "Apache/2.4.52"), 
+                Files.contentOf(logs_output, Charset.defaultCharset()));
+
+        // Borrar contenedor tras su uso
+        operations.down("OneServiceCompose.yaml", usernames[0], flags, appResponse);
+        assertEquals(appResponse.getStatus(), Status.OK);
+    }
+
+
+    @Test
+    @Order(4)
     @DisabledIfEnvironmentVariable(named = "ONE_USER_MODE", matches= "true")
     public void testMultipleUsers() throws IOException {
         System.out.println("==================================");
@@ -163,9 +185,4 @@ public class DockerComposeOperationsTest {
         String[] output = operations.executeCommandForTesting(operations.inContainer(usernames[1], "docker ps -aq"), "/");
         assertEquals(2, output[0].split("\n").length);
     }
-
-
-
-
-
 }
