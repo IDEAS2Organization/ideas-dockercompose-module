@@ -115,6 +115,9 @@ ace.define('ace/theme/yaml', ['require', 'exports', 'module' , 'ace/lib/dom'], f
     .ace-eclipse .ace_indent-guide {\
       background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAE0lEQVQImWP4////f4bLly//BwAmVgd1/w11/gAAAABJRU5ErkJggg==') right repeat-y;\
     }\
+    .ace-eclipse .ace_dockercompose-toplevel-properties {\
+      color: #7d3c98; \
+    }\
     ";
     var dom = require("../lib/dom");
     dom.importCssString(exports.cssText, exports.cssClass);

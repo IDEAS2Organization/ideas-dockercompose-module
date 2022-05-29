@@ -8,13 +8,39 @@
 				"format": "DockerCompose_format",
 				"editorModeId": "ace/mode/yaml",
 				"_editorModeURI": "mode-yaml.js",                         
-				"editorThemeId": "ace/theme/eclipse",
+				"editorThemeId": "ace/theme/yaml",
 				"_editorThemeURI": "theme-yaml.js",
 				 "checkLanguage": "true" 
 			 }
 		],
 				 
-				"operations": [],
+				"operations": [{
+					"id": "up",
+					"name": "Compose Up",
+					"data": {},
+					"_remoteExecution": "false",
+					"action": "function getCode(e,t){document.getElementById(\"dockercompose-module-data\")&&document.getElementById(\"dockercompose-module-data\").remove();var a=document.createElement(\"script\");a.type=\"application/javascript\",a.id=\"dockercompose-module-data\",a.text=\"var operationStructure = \"+JSON.stringify(e)+\";var fileUri = '\"+t+\"';\",document.body.appendChild(a),document.getElementById(\"dockercompose-module-action\")&&document.getElementById(\"dockercompose-module-action\").remove();a=document.createElement(\"script\");a.type=\"application/javascript\",a.id=\"dockercompose-module-action\",a.src=ModeManager.getBaseUri(ModeManager.calculateModelIdFromExt(ModeManager.calculateExtFromFileUri(t)))+\"/language/operation/\"+e.id+\"/javascript\",document.body.appendChild(a),document.getElementById(\"dockercompose-module-util\")||((a=document.createElement(\"script\")).type=\"application/javascript\",a.id=\"dockercompose-module-util\",a.src=ModeManager.getBaseUri(ModeManager.calculateModelIdFromExt(ModeManager.calculateExtFromFileUri(t)))+\"/language/operation/util/javascript\",document.body.appendChild(a))}"
+				}, {
+					"id": "down",
+					"name": "Compose Down",
+					"data": {},
+					"_remoteExecution": "false",
+					"action": "function getCode(e,t){document.getElementById(\"dockercompose-module-data\")&&document.getElementById(\"dockercompose-module-data\").remove();var a=document.createElement(\"script\");a.type=\"application/javascript\",a.id=\"dockercompose-module-data\",a.text=\"var operationStructure = \"+JSON.stringify(e)+\";var fileUri = '\"+t+\"';\",document.body.appendChild(a),document.getElementById(\"dockercompose-module-action\")&&document.getElementById(\"dockercompose-module-action\").remove();a=document.createElement(\"script\");a.type=\"application/javascript\",a.id=\"dockercompose-module-action\",a.src=ModeManager.getBaseUri(ModeManager.calculateModelIdFromExt(ModeManager.calculateExtFromFileUri(t)))+\"/language/operation/\"+e.id+\"/javascript\",document.body.appendChild(a),document.getElementById(\"dockercompose-module-util\")||((a=document.createElement(\"script\")).type=\"application/javascript\",a.id=\"dockercompose-module-util\",a.src=ModeManager.getBaseUri(ModeManager.calculateModelIdFromExt(ModeManager.calculateExtFromFileUri(t)))+\"/language/operation/util/javascript\",document.body.appendChild(a))}"
+				}, {
+					"id": "logs",
+					"name": "Logs",
+					"data": {},
+					"_remoteExecution": "false",
+					"action": "function getCode(e,t){document.getElementById(\"dockercompose-module-data\")&&document.getElementById(\"dockercompose-module-data\").remove();var a=document.createElement(\"script\");a.type=\"application/javascript\",a.id=\"dockercompose-module-data\",a.text=\"var operationStructure = \"+JSON.stringify(e)+\";var fileUri = '\"+t+\"';\",document.body.appendChild(a),document.getElementById(\"dockercompose-module-action\")&&document.getElementById(\"dockercompose-module-action\").remove();a=document.createElement(\"script\");a.type=\"application/javascript\",a.id=\"dockercompose-module-action\",a.src=ModeManager.getBaseUri(ModeManager.calculateModelIdFromExt(ModeManager.calculateExtFromFileUri(t)))+\"/language/operation/\"+e.id+\"/javascript\",document.body.appendChild(a),document.getElementById(\"dockercompose-module-util\")||((a=document.createElement(\"script\")).type=\"application/javascript\",a.id=\"dockercompose-module-util\",a.src=ModeManager.getBaseUri(ModeManager.calculateModelIdFromExt(ModeManager.calculateExtFromFileUri(t)))+\"/language/operation/util/javascript\",document.body.appendChild(a))}"
+				},{
+					"id": "show_containers",
+					"name": "Show containers",
+					"data": {},
+					"_remoteExecution": "false",
+					"action": "function getCode(e,t){document.getElementById(\"dockerfile-module-data\")&&document.getElementById(\"dockerfile-module-data\").remove();var a=document.createElement(\"script\");a.type=\"application/javascript\",a.id=\"dockerfile-module-data\",a.text=\"var operationStructure = \"+JSON.stringify(e)+\";var fileUri = '\"+t+\"';\",document.body.appendChild(a),document.getElementById(\"dockerfile-module-action\")&&document.getElementById(\"dockerfile-module-action\").remove();a=document.createElement(\"script\");a.type=\"application/javascript\",a.id=\"dockerfile-module-action\",a.src=ModeManager.getBaseUri(ModeManager.calculateModelIdFromExt(ModeManager.calculateExtFromFileUri(t)))+\"/language/operation/\"+e.id+\"/javascript\",document.body.appendChild(a),document.getElementById(\"dockerfile-module-util\")||((a=document.createElement(\"script\")).type=\"application/javascript\",a.id=\"dockerfile-module-util\",a.src=ModeManager.getBaseUri(ModeManager.calculateModelIdFromExt(ModeManager.calculateExtFromFileUri(t)))+\"/language/operation/util/javascript\",document.body.appendChild(a))}"
+				}
+				],
+
 				"templateProjects":null,
    				"templateFiles":null,
 				"inspectorLoader": "function(loader, format) {}"

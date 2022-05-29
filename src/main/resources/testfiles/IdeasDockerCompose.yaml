@@ -1,0 +1,24 @@
+version: "3.5"
+services:
+
+  nginx:
+    image: docker4ideas/ideas_nginx
+    ports:
+      - "8081:8081"
+
+  ideas-studio-develop:
+    image: docker4ideas/ideas-studio:develop
+    #command: bash -c "tail -f /dev/null"
+    command: bash -c "cd /ideas/studio && mvn spring-boot:run"
+    ports:
+      - "8080:8080"
+    volumes: 
+      - .:/ideas/studio
+      - /tmp:/tmp # Necesario para el módulo de latex
+
+  ideas-dockercompose-language:
+   image: docker4ideas/module:develop
+   command: bash -c "tail -f /dev/null"
+   # command: bash -c "cd /ideas/dockercompose-module && mvn spring-boot:run"
+   volumes:
+     - ../ideas-dockercompose-module:/ideas/dockercompose-module
